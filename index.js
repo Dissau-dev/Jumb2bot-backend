@@ -23,10 +23,10 @@ const handlePaymentSuccess = async (invoice) => {
     console.log('Updated subscription ', prismasub);
   };
 
-app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
+app.post('/webhook', async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
-  
+  // git add
     try {
       event = stripe.webhooks.constructEvent(
         req.body,
