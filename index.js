@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_TEST);
 
 const prisma = new PrismaClient();
 const app = express();
