@@ -53,9 +53,11 @@ app.use(cors());
 app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
-
+  console.log('Headers:', req.headers);
+  console.log('Raw Body:', req.body.toString());
+  console.log('Raw Body as buffer:', Buffer.isBuffer(req.body));
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(req.body, sig,"whsec_4rvxFFKq5KmdsxxowoGmvv5boSJ5rQPo");
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message, req.body);
     return res.status(400).send('Webhook Error');
@@ -83,10 +85,10 @@ app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, r
   res.status(200).send();
 });
 
-app.use(express.json());
+
 app.use('/', require('./src/routes/userRoutes'));
 app.use('/', require('./src/routes/suscriptionRoutes'));
-
+app.use(express.json());
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
