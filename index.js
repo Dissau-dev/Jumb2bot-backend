@@ -47,9 +47,7 @@ const handlePaymentFailure = async (invoice) => {
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use('/', require('./src/routes/userRoutes'));
-app.use('/', require('./src/routes/suscriptionRoutes'));
+
 
 // Webhook
 app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
@@ -84,6 +82,10 @@ app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, r
 
   res.status(200).send();
 });
+
+app.use(express.json());
+app.use('/', require('./src/routes/userRoutes'));
+app.use('/', require('./src/routes/suscriptionRoutes'));
 
 // Start server
 const PORT = process.env.PORT || 3000;
