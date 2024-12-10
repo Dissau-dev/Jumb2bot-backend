@@ -18,20 +18,7 @@ const createSubscription = async (req, res) => {
   
       // Obtener o crear Stripe Customer
       let stripeCustomerId = user.stripeCustomerId;
-     /* if (!stripeCustomerId) {
-        const customer = await stripe.customers.create({
-          email: user.email,
-          name: user.name,
-        });
-  
-        // Actualizar el usuario con el stripeCustomerId
-        stripeCustomerId = customer.id;
-        await prisma.user.update({
-          where: { id: userId },
-          data: { stripeCustomerId },
-        });
-      }*/
-  
+    
       // Crear la suscripción en Stripe
       const subscription = await stripe.subscriptions.create({
         customer: stripeCustomerId,

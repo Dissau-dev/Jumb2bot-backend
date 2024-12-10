@@ -7,8 +7,7 @@ const bodyParser = require('body-parser');
 const prisma = new PrismaClient();
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+
 
 const handlePaymentSuccess = async (invoice) => {
     const subscriptionId = invoice.subscription;
@@ -91,6 +90,8 @@ const subscriptionRoutes = require('./src/routes/suscriptionRoutes');
 
 app.use('/', userRoutes);
 app.use('/', subscriptionRoutes);
+app.use(cors());
+app.use(express.json());
 
 const PORT =  3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
