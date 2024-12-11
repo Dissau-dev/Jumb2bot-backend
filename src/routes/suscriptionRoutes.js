@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { createSubscription, getAllSubscriptions } = require('../controllers/suscriptionController');
+const { createSubscription, getAllSubscriptions, UpdatedSubscription } = require('../controllers/suscriptionController');
 
 const router = express.Router();
 
@@ -11,6 +11,11 @@ router.get('/subscription/all', getAllSubscriptions); // Obtener todos los usuar
 router.post('/subscription/create',[
 
 ],createSubscription);
+
+// create subs
+router.put('/subscription/update',[
+
+],UpdatedSubscription);
 
 /*
 // update user

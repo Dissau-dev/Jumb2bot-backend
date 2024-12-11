@@ -1,5 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_TEST);
 const { PrismaClient } = require('@prisma/client');
+const { updateUser } = require('./userController');
 const prisma = new PrismaClient();
 
 const createSubscription = async (req, res) => {
@@ -65,7 +66,40 @@ const createSubscription = async (req, res) => {
     }
   };
   
+  // Endpoint para actualizar una suscripción
+const UpdatedSubscription = async (req, res) => {
+  const { stripeSubscriptionId} = req.body;
 
+  if (!stripeSubscriptionId ) {
+    return res.status(400).json({ error: "stripeSubscriptionId y newStatus son requeridos." });
+  }
+
+  try {
+    // Buscar la suscripción en tu base de datos usando Prisma
+    const subscription = await prisma.subscription.findUnique({
+      where: { stripeSubscriptionId },
+    });
+
+    if (!subscription) {
+      return res.status(404).json({ error: "Suscripción no encontrada." });
+    }
+  
+    // Actualizar el estado en tu base de datos
+    const updatedSubscription = await prisma.subscription.update({
+      where: { stripeSubscriptionId },
+      data: { status: "active" },
+    });
+
+    res.status(200).json({
+      message: "Suscripción actualizada con éxito.",
+      subscription: updatedSubscription,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error actualizando la suscripción." });
+  }
+};
+  
 // Obtener todos los usuarios
 const getAllSubscriptions = async (req, res) => {
     try {
@@ -76,4 +110,4 @@ const getAllSubscriptions = async (req, res) => {
     }
   };
 
-module.exports = {createSubscription,getAllSubscriptions };
+module.exports = {createSubscription,getAllSubscriptions,UpdatedSubscription };
