@@ -18,7 +18,7 @@ function generateReferralCode() {
 // Crear usuario
 const createUser = async (req, res) => {
   console.log('Body recibido:', req.body);
-  
+
     const { email, password, referredBy,role,name } = req.body;
 
     const referralCode = generateReferralCode(); 
@@ -32,11 +32,16 @@ const createUser = async (req, res) => {
          msg: 'This email is alredy register'
         })
        }
-
-       const customer = await stripe.customers.create({
-        email: email,
-        name: name,
-      });
+       let customer
+       try {
+         customer = await stripe.customers.create({
+            email: email,
+            name: name,
+        });
+    } catch (error) {
+        console.error('Error creando cliente en Stripe:', error);
+        return res.status(500).json({ error: 'Error creating Stripe customer' });
+    }
        //Encriptar la contraseña
        const hashedPassword = await bcryptjs.hash(password, 6)
 
@@ -56,9 +61,9 @@ const createUser = async (req, res) => {
     res.status(201).json({ user: newUser, token });
    
   } catch (err) {
-
-   return res.status(400).json({ error: err.message });
-   console.log(err);
+    console.error('Error creando usuario en la base de datos:', err);
+    return res.status(500).json({ error: 'Database error' });
+  
   }
 };
 
