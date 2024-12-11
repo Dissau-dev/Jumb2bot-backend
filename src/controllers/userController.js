@@ -57,6 +57,7 @@ const createUser = async (req, res) => {
   } catch (err) {
 
    return res.status(400).json({ error: err.message });
+   console.log(err);
   }
 };
 
@@ -110,7 +111,12 @@ const updateUser = async (req, res, next) => {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-  
+      const userSubscription = await prisma.subscription.findUnique({
+        where: { userId: userId },
+      });
+      if (userSubscription) {
+        return res.status(404).json({ message: 'Is not posible delete an usr with active subscription' });
+      }
       // Si el usuario existe, procede a eliminarlo
       await userService.deleteUser(userId);
       

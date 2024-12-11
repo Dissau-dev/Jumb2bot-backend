@@ -94,10 +94,10 @@ app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, r
   res.status(200).send();
 });
 
-
+app.use(express.json());
 app.use('/', require('./src/routes/userRoutes'));
 app.use('/', require('./src/routes/suscriptionRoutes'));
-app.use(express.json());
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
