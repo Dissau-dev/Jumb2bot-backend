@@ -37,7 +37,7 @@ model Subscription {
   plan                 String // Plan (mensual, trimestral, anual)
   startDate            DateTime
   endDate              DateTime
-  stripeSubscriptionId String? // ID de la suscripción en Stripe
+  stripeSubscriptionId String   @unique // ID de la suscripción en Stripe
   status               String // Estado de la suscripción: active, canceled, past_due
   trialEndsAt          DateTime // Fecha de fin del periodo de prueba
   userId               Int      @unique

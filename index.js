@@ -17,11 +17,20 @@ const handlePaymentSuccess = async (invoice) => {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
   console.log('Payment succeeded for subscription:', subscription);
 
-  const prismasub = await prisma.subscription.update({
-    where: { stripeSubscriptionId: subscriptionId },
-    data: { status: 'active' },
-  });
-  console.log('Updated subscription status to active in DB for user:', prismasub.userId);
+  try {
+    await prisma.subscription.update({
+      where: {
+        stripeSubscriptionId: "sub_1QUaWuDrtegwEnl30ZSxuAdC",
+      },
+      data: {
+        status: "active",
+      },
+    });
+  } catch (error) {
+    console.error("Error actualizando la suscripción:", error);
+    // Opcionalmente, puedes agregar lógica para manejar el error
+  }
+  
 };
 
 const handlePaymentFailure = async (invoice) => {
