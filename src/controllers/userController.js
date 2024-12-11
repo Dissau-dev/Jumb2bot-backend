@@ -17,7 +17,8 @@ function generateReferralCode() {
 
 // Crear usuario
 const createUser = async (req, res) => {
-
+  console.log('Body recibido:', req.body);
+  
     const { email, password, referredBy,role,name } = req.body;
 
     const referralCode = generateReferralCode(); 
