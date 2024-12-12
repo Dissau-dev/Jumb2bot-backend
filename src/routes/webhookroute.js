@@ -24,25 +24,26 @@ const handlePaymentSuccess = async (invoice) => {
       console.log("Error: Subscription not found.");
       return; // Salir si no se encuentra la suscripción
     }
-
+  
     await prisma.subscription.update({
       where: { stripeSubscriptionId: subscriptionId },
       data: { status: "active" },
     });
     console.log('Updated subscription status to active in DB.');
   } catch (error) {
-    console.error("Error updating the subscription:", error);
+    console.error("Error updating the subscription in succes payment:", error);
   }
 };
 
 const handlePaymentFailure = async (invoice) => {
   const subscriptionId = invoice.subscription;
-  if (!subscriptionId) {
-    console.error('Subscription ID not found in invoice object.');
-    return;
-  }
-
+ 
   try {
+    if (!subscriptionId) {
+      console.error('Subscription ID not found in invoice object.');
+      return;
+    } 
+  
     const subscriptionPrisma = await prisma.subscription.findUnique({
       where: { stripeSubscriptionId: subscriptionId },
     });
@@ -58,7 +59,7 @@ const handlePaymentFailure = async (invoice) => {
     });
     console.log('Updated subscription status to payment_failed in DB.');
   } catch (error) {
-    console.error('Error handling payment failure:', error);
+    console.error('Error handling payment failure in failure:', error);
   }
 };
 // Webhook
@@ -77,16 +78,52 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
   switch (event.type) {
     case 'invoice.payment_succeeded':
       await handlePaymentSuccess(event.data.object);
+      console.log(event.data.object);
       break;
     case 'invoice.payment_failed':
       await handlePaymentFailure(event.data.object);
+      console.log(event.data.object);
       break;
+      case 'customer.subscription.updated':
+        console.log('Subscription updated:', event.data.object);
+        const subscriptionUpdated = event.data.object;
+        await updateSubscriptionInDB(subscriptionUpdated);
+        break;
+        case 'customer.subscription.created':
+          console.log('Subscription created:', event.data.object);
+          const subscriptionCreated = event.data.object;
+          await updateSubscriptionInDB(subscriptionCreated);
+          break;
     default:
       console.log(`Unhandled event type: ${event.type}`);
   }
 
   res.status(200).send();
 });
+
+// Función para actualizar la suscripción en Prisma
+async function updateSubscriptionInDB(subscription) {
+  const prisma = require('@prisma/client');
+  const { PrismaClient } = prisma;
+  const prismaClient = new PrismaClient();
+
+  try {
+      await prismaClient.subscription.update({
+          where: { stripeSubscriptionId: subscription.id },
+          data: {
+              status: subscription.status, // Ejemplo: active, incomplete, etc.
+              startDate: subscription.start_date,
+              endDate: subscription.current_period_end,
+              trialEndsAt: subscription.trial_end,
+          },
+      });
+      console.log('Subscription updated in database');
+  } catch (error) {
+      console.error('Error updating subscription in database:', error);
+  } finally {
+      await prismaClient.$disconnect();
+  }
+}
 
   module.exports = router;
 
