@@ -67,7 +67,7 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(req.body, sig, "whsec_4rvxFFKq5KmdsxxowoGmvv5boSJ5rQPo");
   } catch (err) { console.error('Webhook signature verification failed:', err.message);
     return res.status(400).send('Webhook Error');
   }
@@ -87,7 +87,10 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
 
   res.status(200).send();
 });
-/*
+
+  module.exports = router;
+
+  /*
 router.post('/webhook', async (req, res) => {
     const sig = req.headers['stripe-signature'];
   
@@ -129,4 +132,3 @@ router.post('/webhook', async (req, res) => {
   
     res.status(200).send('Evento recibido');
   });*/
-  module.exports = router;
