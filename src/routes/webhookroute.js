@@ -62,7 +62,7 @@ const handlePaymentFailure = async (invoice) => {
   }
 };
 // Webhook
-router.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
