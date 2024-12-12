@@ -11,6 +11,7 @@ const handlePaymentSuccess = async (invoice) => {
   const subscriptionId = invoice.subscription;
   if (!subscriptionId) {
     console.error('Subscription ID not found in invoice object.');
+    
     return;
   }
 

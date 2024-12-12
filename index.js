@@ -7,15 +7,14 @@ const bodyParser = require('body-parser');
 const prisma = new PrismaClient();
 const app = express();
 
-
 // Middleware
 app.use(cors());
+app.use(express.json()); // Asegúrate de que este middleware está antes de las rutas regulares
 
+// Ruta del webhook (sin express.json)
+app.use('/webhook', require('./src/routes/webhookroute'));
 
-app.use('/', require('./src/routes/webhookroute'));
-
-app.use(express.json());
-
+// Otras rutas
 app.use('/', require('./src/routes/userRoutes'));
 app.use('/', require('./src/routes/suscriptionRoutes'));
 
