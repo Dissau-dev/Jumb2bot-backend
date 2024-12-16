@@ -65,14 +65,13 @@ const createSubscription = async (req, res) => {
      
     
     // Guardar la suscripción en la base de datos
-    const startDate = new Date();
+    
     const trialEndsAt = subscription.trial_end
       ? new Date(subscription.trial_end * 1000)
       : null;
 
-    const endDate = new Date(
-      startDate.setMonth(startDate+1) // Ajusta según tu lógica
-    );
+      const startDate = new Date(subscription.start_date * 1000); // Convertir a milisegundos
+      const endDate = new Date(subscription.current_period_end * 1000); // Convertir a milisegundos
    const plan = PRICES.find(p => p.price_id === priceId);
    if(!plan){
     return res.status(400).json({
@@ -82,7 +81,7 @@ const createSubscription = async (req, res) => {
     await prisma.subscription.create({
       data: {
         plan: plan.product_name, // Cambiar según tu lógica
-        startDate: new Date(),
+        startDate: startDate,
         endDate,
         stripeSubscriptionId: subscription.id,
         status: subscription.status,

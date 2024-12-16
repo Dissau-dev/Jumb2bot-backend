@@ -149,9 +149,9 @@ async function updateSubscriptionInDB(subscription) {
           where: { stripeSubscriptionId: subscription.id },
           data: {
               status: subscription.status, // Ejemplo: active, incomplete, etc.
-              startDate: subscription.start_date,
-              endDate: subscription.current_period_end,
-              trialEndsAt: subscription.trial_end,
+              startDate: subscription.start_date*1000,
+              endDate: (subscription.current_period_end* 1000),
+              trialEndsAt: subscription.trial_end *1000,
           },
       });
       console.log('Subscription updated in database');
