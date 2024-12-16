@@ -62,6 +62,25 @@ const handlePaymentFailure = async (invoice) => {
     console.error('Error handling payment failure in failure:', error);
   }
 };
+
+async function handleSubscriptionEnd(subscription) {
+  const subscriptionId = subscription.id;
+
+  try {
+    // Actualiza la base de datos para reflejar que la suscripción ha terminado
+    await prisma.subscription.update({
+      where: { stripeSubscriptionId: subscriptionId },
+      data: {
+        status: 'expired', // Estado para suscripciones expiradas
+      },
+    });
+
+    console.log(`Subscription ${subscriptionId} marked as expired.`);
+  } catch (error) {
+    console.error('Error updating subscription after it ended:', error);
+  }
+}
+
 // Webhook
 router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
@@ -80,15 +99,33 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
       await handlePaymentSuccess(event.data.object);
       console.log(event.data.object);
       break;
-    case 'invoice.payment_failed':
-      await handlePaymentFailure(event.data.object);
-      console.log(event.data.object);
-      break;
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object;
+        const attemptCount = invoice.attempt_count;
+  
+        if (attemptCount >= 3) {
+          console.log('Payment has failed after multiple attempts:', invoice);
+          await handleFinalPaymentFailure(invoice);
+        } else {
+          await handlePaymentFailure(invoice);
+          console.log(event.data.object);
+        }
+        break;
+      }
+      case 'customer.subscription.deleted': {
+        console.log('Subscription deleted:', event.data.object);
+        const subscriptionDeleted = event.data.object;
+        await handleSubscriptionEnd(subscriptionDeleted);
+        break;
+      }
       case 'customer.subscription.updated':
         console.log('Subscription updated:', event.data.object);
         const subscriptionUpdated = event.data.object;
         await updateSubscriptionInDB(subscriptionUpdated);
         break;
+        case 'customer.subscription.deleted':
+          await handleSubscriptionDeleted(event.data.object);
+          break;
         case 'customer.subscription.created':
           console.log('Subscription created:', event.data.object);
           const subscriptionCreated = event.data.object;
@@ -124,48 +161,19 @@ async function updateSubscriptionInDB(subscription) {
       await prismaClient.$disconnect();
   }
 }
+// Manejar la eliminación de la suscripción
+const handleSubscriptionDeleted = async (subscription) => {
+  const stripeSubscriptionId = subscription.id;
+
+  try {
+    // Eliminar la suscripción de tu base de datos
+    await prisma.subscription.delete({
+      where: { stripeSubscriptionId },
+    });
+    console.log(`Suscripción ${stripeSubscriptionId} eliminada de la base de datos.`);
+  } catch (error) {
+    console.error('Error eliminando la suscripción de la base de datos:', error);
+  }
+};
 
   module.exports = router;
-
-  /*
-router.post('/webhook', async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-  
-    let event;
-  
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err) {
-      console.error('Webhook signature verification failed:', err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-  
-    switch (event.type) {
-      case 'invoice.payment_succeeded': {
-        const invoice = event.data.object;
-  
-        // Actualizar la suscripción en tu base de datos
-        await prisma.subscription.update({
-          where: { stripeSubscriptionId: invoice.subscription },
-          data: { status: 'active' },
-        });
-        console.log(`Pago exitoso para suscripción ${invoice.subscription}`);
-        break;
-      }
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object;
-  
-        // Actualizar la suscripción como fallida
-        await prisma.subscription.update({
-          where: { stripeSubscriptionId: invoice.subscription },
-          data: { status: 'past_due' },
-        });
-        console.log(`Pago fallido para suscripción ${invoice.subscription}`);
-        break;
-      }
-      default:
-        console.log(`Evento no manejado: ${event.type}`);
-    }
-  
-    res.status(200).send('Evento recibido');
-  });*/
