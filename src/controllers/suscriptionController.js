@@ -83,7 +83,7 @@ const createSubscription = async (req, res) => {
       error: `Plan no encontrado. Contacta con soporte.${priceId}`,
     });
   }
-    await prisma.subscription.create({
+  const createdSub = await prisma.subscription.create({
       data: {
         plan: plan.product_name, // Cambiar según tu lógica
         startDate: new Date(subscription.start_date * 1000), // Convertir a Date
@@ -103,6 +103,7 @@ const createSubscription = async (req, res) => {
     res.status(200).json({
       message: 'Suscripción creada exitosamente. Confirme el pago',
       clientSecret: paymentIntent.client_secret,
+      createdSub: createdSub
     });
   } catch (error) {
     console.error('Error creando la suscripción:', error);
