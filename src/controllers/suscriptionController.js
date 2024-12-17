@@ -43,6 +43,9 @@ const createSubscription = async (req, res) => {
         });
       }
       if (existingSubscription.status === 'incomplete') {
+        const stripeCustomerId =
+      user.stripeCustomerId || (await createStripeCustomer(user));
+      
         const subscription = await stripe.subscriptions.create({
           customer: stripeCustomerId,
           items: [{ price: priceId }],
