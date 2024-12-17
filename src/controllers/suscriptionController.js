@@ -181,7 +181,7 @@ const UpdatedSubscription = async (req, res) => {
 
     // Actualiza la base de datos para reflejar la cancelación
     await prisma.subscription.update({
-      where: { stripeSubscriptionId: subscriptionId },
+      where: { stripeSubscriptionId: stripeSubscriptionId },
       data: {
         status: 'cancel_at_period_end', // Puedes definir este estado como desees
         endDate: new Date(canceledSubscription.current_period_end * 1000), // Actualizar la fecha de fin
@@ -197,6 +197,7 @@ const UpdatedSubscription = async (req, res) => {
     res.status(500).json({ error: 'Failed to cancel subscription. Please try again later.' });
   }
 };  
+
 // Obtener todos los usuarios
 const getAllSubscriptions = async (req, res) => {
     try {

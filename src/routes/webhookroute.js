@@ -154,9 +154,9 @@ async function updateSubscriptionInDB(subscription) {
               trialEndsAt: subscription.trial_end *1000,
           },
       });
-      console.log('Subscription updated in database');
+  
   } catch (error) {
-      console.error('Error updating subscription in database:', error);
+      console.error('Error updating subscription in database en el webhook:', error);
   } finally {
       await prismaClient.$disconnect();
   }
