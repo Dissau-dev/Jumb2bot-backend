@@ -43,7 +43,18 @@ const createSubscription = async (req, res) => {
         });
       }
       if (existingSubscription.status === 'incomplete') {
-      
+        const subscription = await stripe.subscriptions.create({
+          customer: stripeCustomerId,
+          items: [{ price: priceId }],
+    
+          payment_behavior: 'default_incomplete',
+          expand: ['latest_invoice.payment_intent'],
+          payment_settings: {
+            payment_method_types: ['card'], // Solo tarjetas
+          },
+          metadata: { userId },
+        });
+        const paymentIntent = subscription.latest_invoice.payment_intent;
         return res.status(200).json({
           message: 'Tu suscripción está incompleta. Intenta completar el pago.',
           clientSecret: paymentIntent.client_secret,
