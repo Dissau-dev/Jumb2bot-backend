@@ -75,7 +75,7 @@ async function handleSubscriptionEnd(subscription) {
       },
     });
 
-    console.log(`Subscription ${subscriptionId} marked as expired.`);
+    console.log(`Subscription  marked as expired.`);
   } catch (error) {
     console.error('Error updating subscription after it ended:', error);
   }
@@ -97,29 +97,29 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
   switch (event.type) {
     case 'invoice.payment_succeeded':
       await handlePaymentSuccess(event.data.object);
-      console.log(event.data.object);
+
       break;
       case 'invoice.payment_failed': {
         const invoice = event.data.object;
         const attemptCount = invoice.attempt_count;
   
         if (attemptCount >= 3) {
-          console.log('Payment has failed after multiple attempts:', invoice);
+  
           await handleFinalPaymentFailure(invoice);
         } else {
           await handlePaymentFailure(invoice);
-          console.log(event.data.object);
+   
         }
         break;
       }
       case 'customer.subscription.deleted': {
-        console.log('Subscription deleted:', event.data.object);
+    
         const subscriptionDeleted = event.data.object;
         await handleSubscriptionEnd(subscriptionDeleted);
         break;
       }
       case 'customer.subscription.updated':
-        console.log('Subscription updated:', event.data.object);
+
         const subscriptionUpdated = event.data.object;
         await updateSubscriptionInDB(subscriptionUpdated);
         break;
@@ -127,7 +127,7 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
           await handleSubscriptionDeleted(event.data.object);
           break;
         case 'customer.subscription.created':
-          console.log('Subscription created:', event.data.object);
+        
           const subscriptionCreated = event.data.object;
           await updateSubscriptionInDB(subscriptionCreated);
           break;
@@ -149,9 +149,9 @@ async function updateSubscriptionInDB(subscription) {
           where: { stripeSubscriptionId: subscription.id },
           data: {
               status: subscription.status, // Ejemplo: active, incomplete, etc.
-              startDate: subscription.start_date*1000,
-              endDate: (subscription.current_period_end* 1000),
-              trialEndsAt: subscription.trial_end *1000,
+              startDate: new Date (subscription.start_date*1000),
+              endDate: new Date (subscription.current_period_end* 1000),
+              trialEndsAt: new Date (subscription.trial_end *1000),
           },
       });
   

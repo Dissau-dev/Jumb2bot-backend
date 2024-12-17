@@ -149,7 +149,7 @@ const updateUser = async (req, res, next) => {
      
       const token = await generateJWT(user);
 
-      const {password, userWithPassword} =user;
+      const {password, ...userWithPassword} =user;
       res.status(201).json({ user: userWithPassword, token:token });
 
     } catch (error) {
