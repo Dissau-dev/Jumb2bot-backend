@@ -134,7 +134,8 @@ const updateUser = async (req, res, next) => {
     }
   };
   const login = async(req ,res = response)=>{
-    const {email, password} = req.body;
+    const { email, password } = req.body;
+  
     try {
       const user = await userService.getUserByEmail(email);
       if (!user) {
@@ -142,24 +143,28 @@ const updateUser = async (req, res, next) => {
       }
   
       // Verificar contraseña
-      const isPasswordValid = await bcryptjs.compareSync(password, user.password);
+      const isPasswordValid = await bcryptjs.compare(password, user.password);
       if (!isPasswordValid) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
-     
+  
       const token = await generateJWT(user);
-
-      const {password, ...userWithPassword} =user;
-      res.status(201).json({ user: userWithPassword, token:token });
-
+  
+      // Excluir la contraseña del objeto user
+      const { password: _, ...userWithoutPassword } = user;
+  
+      res.status(201).json({
+        user: userWithoutPassword,
+        token: token
+      });
+  
     } catch (error) {
-       console.log(error);
-       res.status(500).json({
-           ok: false,
-           messge:'consulta al admin'
-       })
+      console.log(error);
+      res.status(500).json({
+        ok: false,
+        message: 'Consulta al administrador'
+      });
     }
-    
 
    }
 
