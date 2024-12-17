@@ -63,7 +63,6 @@ const createSubscription = async (req, res) => {
       expand: ['latest_invoice.payment_intent'],
       payment_settings: {
         payment_method_types: ['card'], // Solo tarjetas
-        currency: 'usd',
       },
       metadata: { userId },
     });
