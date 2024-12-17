@@ -207,6 +207,18 @@ const getAllSubscriptions = async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   };
+  const getSubscriptionsByUserId = async (req, res) => {
+    const {userId} = req.body
+    const stripeSubscription = await prisma.subscription.findUnique({
+      where: { userId },
+    });
+    if (!stripeSubscription) {
+      return res.status(400).json({ error: 'No se encontró la subscripción' });
+    }
+    else{
+      return res.status(200).json({ subscription: stripeSubscription });
+    }
+  };
   const getAllPlans = async (req, res) => {
     try {
       const plans = PRICES
@@ -216,4 +228,4 @@ const getAllSubscriptions = async (req, res) => {
     }
   };
 
-module.exports = {createSubscription,getAllSubscriptions,UpdatedSubscription,cancelSubscription, getAllPlans };
+module.exports = {createSubscription,getAllSubscriptions,UpdatedSubscription,cancelSubscription, getAllPlans , getSubscriptionsByUserId};

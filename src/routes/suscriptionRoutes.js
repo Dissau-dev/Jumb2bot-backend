@@ -1,12 +1,12 @@
 const express = require('express');
 
-const { createSubscription, getAllSubscriptions, UpdatedSubscription, getAllPlans,cancelSubscription } = require('../controllers/suscriptionController');
+const { createSubscription, getAllSubscriptions, UpdatedSubscription, getAllPlans,cancelSubscription, getSubscriptionsByUserId } = require('../controllers/suscriptionController');
 
 const router = express.Router();
 
 
 router.get('/subscription/all', getAllSubscriptions); // Obtener todos los usuarios
-
+router.get('/subscription/byUser', getSubscriptionsByUserId); // Obtener todos los usuarios
 router.get('/plans/all', getAllPlans); // Obtener todos los planes
 
 // create subs
