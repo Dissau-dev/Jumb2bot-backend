@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { createSubscription, getAllSubscriptions, UpdatedSubscription, getAllPlans } = require('../controllers/suscriptionController');
+const { createSubscription, getAllSubscriptions, UpdatedSubscription, getAllPlans,cancelSubscription } = require('../controllers/suscriptionController');
 
 const router = express.Router();
 
@@ -13,6 +13,10 @@ router.get('/plans/all', getAllPlans); // Obtener todos los planes
 router.post('/subscription/create',[
 
 ],createSubscription);
+
+router.put('/subscription/cancel',[
+
+],cancelSubscription);
 
 // create subs
 router.put('/subscription/update',[

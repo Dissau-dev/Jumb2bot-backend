@@ -101,7 +101,7 @@ const createSubscription = async (req, res) => {
     const paymentIntent = subscription.latest_invoice.payment_intent;
 
     res.status(200).json({
-      message: 'Suscripción creada exitosamente.',
+      message: 'Suscripción creada exitosamente. Confirme el pago',
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
