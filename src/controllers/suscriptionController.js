@@ -98,6 +98,8 @@ const createSubscription = async (req, res) => {
       error: `Plan no encontrado. Contacta con soporte.${priceId}`,
     });
   }
+  console.log("este es el price " + plan.price + "este es el priceid" + plan.price_id +
+     "este es el priceId que recibo en el req.body" +priceId );
   const createdSub = await prisma.subscription.create({
       data: {
         plan: plan.product_name, // Cambiar según tu lógica
