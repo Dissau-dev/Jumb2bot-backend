@@ -194,9 +194,6 @@ const UpdatedSubscription = async (req, res) => {
     const canceledSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
       cancel_at_period_end: true,
     });
-
-    const beforeUpdate = await prisma.subscription.findUnique({ where: { userId } });
-    console.log('Before update:', beforeUpdate);
     
     const updatedSubscription = await prisma.subscription.update({
       where: { userId },
@@ -206,8 +203,7 @@ const UpdatedSubscription = async (req, res) => {
       },
     });
     
-    const afterUpdate = await prisma.subscription.findUnique({ where: { userId } });
-    console.log('After update:', afterUpdate);
+
 
   console.log(updatedSubscription)
     res.status(200).json({
