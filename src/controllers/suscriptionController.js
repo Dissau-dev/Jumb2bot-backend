@@ -194,21 +194,19 @@ const UpdatedSubscription = async (req, res) => {
     const canceledSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
       cancel_at_period_end: true,
     });
-    
-    const updatedSubscription = await prisma.subscription.update({
+
+    // Actualiza la base de datos para reflejar la cancelación
+   const createdSub = await prisma.subscription.update({
       where: { userId },
       data: {
-        status: 'cancel_at_period_end',
-        endDate: new Date(canceledSubscription.current_period_end * 1000),
+        status: 'cancel_at_period_end', // Puedes definir este estado como desees
+        endDate: new Date(canceledSubscription.current_period_end * 1000), // Actualizar la fecha de fin
       },
     });
-    
-
-
-  console.log(updatedSubscription)
+  console.log(createdSub)
     res.status(200).json({
       message: 'Subscription successfully canceled at period end.',
-      subscriptiontorertun: UpdatedSubscription,
+      subscription: createdSub,
     });
   } catch (error) {
     console.error('Error canceling subscription:', error);
