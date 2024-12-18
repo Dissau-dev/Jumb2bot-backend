@@ -121,8 +121,8 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
       case 'customer.subscription.updated':
 
         const subscriptionUpdated = event.data.object;
-        console.log('este stutus lo recibo por webhook'+subscriptionUpdated.status);
-//await updateSubscriptionInDB(subscriptionUpdated);
+
+     await updateSubscriptionInDB(subscriptionUpdated);
         break;
         case 'customer.subscription.deleted':
           await handleSubscriptionDeleted(event.data.object);
@@ -145,11 +145,13 @@ async function updateSubscriptionInDB(subscription) {
   const { PrismaClient } = prisma;
   const prismaClient = new PrismaClient();
 
+  const { id, status, cancel_at_period_end, current_period_end } = subscription;
+
   try {
       await prismaClient.subscription.update({
-          where: { stripeSubscriptionId: subscription.id },
+          where: { stripeSubscriptionId: id },
           data: {
-              status: subscription.status, // Ejemplo: active, incomplete, etc.
+              status: cancel_at_period_end ? 'cancel_at_period_end' : status, // Ejemplo: active, incomplete, etc.
               startDate: new Date (subscription.start_date*1000),
               endDate: new Date (subscription.current_period_end* 1000),
               trialEndsAt: new Date (subscription.trial_end *1000),
