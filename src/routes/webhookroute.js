@@ -121,6 +121,7 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
       case 'customer.subscription.updated':
 
         const subscriptionUpdated = event.data.object;
+        console.log(subscriptionUpdated.status);
         await updateSubscriptionInDB(subscriptionUpdated);
         break;
         case 'customer.subscription.deleted':
