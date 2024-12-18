@@ -212,7 +212,7 @@ const UpdatedSubscription = async (req, res) => {
   console.log(updatedSubscription)
     res.status(200).json({
       message: 'Subscription successfully canceled at period end.',
-      subscription: UpdatedSubscription,
+      subscriptiontorertun: UpdatedSubscription,
     });
   } catch (error) {
     console.error('Error canceling subscription:', error);

@@ -121,8 +121,8 @@ router.post('/', bodyParser.raw({ type: 'application/json' }), async (req, res) 
       case 'customer.subscription.updated':
 
         const subscriptionUpdated = event.data.object;
-        console.log(subscriptionUpdated.status);
-        await updateSubscriptionInDB(subscriptionUpdated);
+        console.log('este stutus lo recibo por webhook'+subscriptionUpdated.status);
+//await updateSubscriptionInDB(subscriptionUpdated);
         break;
         case 'customer.subscription.deleted':
           await handleSubscriptionDeleted(event.data.object);
