@@ -195,18 +195,24 @@ const UpdatedSubscription = async (req, res) => {
       cancel_at_period_end: true,
     });
 
-    // Actualiza la base de datos para reflejar la cancelación
-   const createdSub = await prisma.subscription.update({
+    const beforeUpdate = await prisma.subscription.findUnique({ where: { userId } });
+    console.log('Before update:', beforeUpdate);
+    
+    const updatedSubscription = await prisma.subscription.update({
       where: { userId },
       data: {
-        status: 'cancel_at_period_end', // Puedes definir este estado como desees
-        endDate: new Date(canceledSubscription.current_period_end * 1000), // Actualizar la fecha de fin
+        status: 'cancel_at_period_end',
+        endDate: new Date(canceledSubscription.current_period_end * 1000),
       },
     });
-  console.log(createdSub)
+    
+    const afterUpdate = await prisma.subscription.findUnique({ where: { userId } });
+    console.log('After update:', afterUpdate);
+
+  console.log(updatedSubscription)
     res.status(200).json({
       message: 'Subscription successfully canceled at period end.',
-      subscription: createdSub,
+      subscription: UpdatedSubscription,
     });
   } catch (error) {
     console.error('Error canceling subscription:', error);
