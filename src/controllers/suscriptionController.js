@@ -45,7 +45,7 @@ const createSubscription = async (req, res) => {
       if (existingSubscription.status === 'incomplete') {
         const stripeCustomerId =
       user.stripeCustomerId || (await createStripeCustomer(user));
-      
+
         const subscription = await stripe.subscriptions.create({
           customer: stripeCustomerId,
           items: [{ price: priceId }],
@@ -61,6 +61,7 @@ const createSubscription = async (req, res) => {
         return res.status(200).json({
           message: 'Tu suscripción está incompleta. Intenta completar el pago.',
           clientSecret: paymentIntent.client_secret,
+          createdSub: existingSubscription
         });
       }
     }
@@ -195,17 +196,17 @@ const UpdatedSubscription = async (req, res) => {
     });
 
     // Actualiza la base de datos para reflejar la cancelación
-    await prisma.subscription.update({
-      where: { stripeSubscriptionId: stripeSubscriptionId },
+   const createdSub = await prisma.subscription.update({
+      where: { userId },
       data: {
         status: 'cancel_at_period_end', // Puedes definir este estado como desees
         endDate: new Date(canceledSubscription.current_period_end * 1000), // Actualizar la fecha de fin
       },
     });
-
+  console.log(createdSub)
     res.status(200).json({
       message: 'Subscription successfully canceled at period end.',
-      subscription: canceledSubscription,
+      subscription: createdSub,
     });
   } catch (error) {
     console.error('Error canceling subscription:', error);
