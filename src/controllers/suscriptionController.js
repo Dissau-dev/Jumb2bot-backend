@@ -226,13 +226,13 @@ const getAllSubscriptions = async (req, res) => {
   const getSubscriptionsByUserId = async (req, res) => {
     try {
       const { userId } = req.params;
-  
+   const id = parseInt(userId);
       if (!userId) {
         return res.status(400).json({ error: 'El userId es obligatorio' });
       }
   
       const stripeSubscription = await prisma.subscription.findUnique({
-        where: { userId },
+        where: {  userId:id },
       });
   
       if (!stripeSubscription) {
