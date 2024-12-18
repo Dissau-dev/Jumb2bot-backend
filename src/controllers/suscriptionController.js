@@ -224,17 +224,28 @@ const getAllSubscriptions = async (req, res) => {
     }
   };
   const getSubscriptionsByUserId = async (req, res) => {
-    const {userId} = req.params
-    const stripeSubscription = await prisma.subscription.findUnique({
-      where: { userId },
-    });
-    if (!stripeSubscription) {
-      return res.status(400).json({ error: 'No se encontró la subscripción' });
-    }
-    else{
+    try {
+      const { userId } = req.params;
+  
+      if (!userId) {
+        return res.status(400).json({ error: 'El userId es obligatorio' });
+      }
+  
+      const stripeSubscription = await prisma.subscription.findUnique({
+        where: { userId },
+      });
+  
+      if (!stripeSubscription) {
+        return res.status(404).json({ error: 'No se encontró la subscripción' });
+      }
+  
       return res.status(200).json({ subscription: stripeSubscription });
+    } catch (error) {
+      console.error('Error en getSubscriptionsByUserId:', error.message);
+      return res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
+  
   const getAllPlans = async (req, res) => {
     try {
       const plans = PRICES
