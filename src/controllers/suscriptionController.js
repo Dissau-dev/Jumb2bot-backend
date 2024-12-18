@@ -224,7 +224,7 @@ const getAllSubscriptions = async (req, res) => {
     }
   };
   const getSubscriptionsByUserId = async (req, res) => {
-    const {userId} = req.body
+    const {userId} = req.params
     const stripeSubscription = await prisma.subscription.findUnique({
       where: { userId },
     });

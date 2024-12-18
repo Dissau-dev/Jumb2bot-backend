@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.get('/subscription/all', getAllSubscriptions); // Obtener todos los usuarios
-router.get('/subscription/byUser', getSubscriptionsByUserId); // Obtener todos los usuarios
+router.get('/subscription/byUser/:userId', getSubscriptionsByUserId); // Obtener todos los usuarios
 router.get('/plans/all', getAllPlans); // Obtener todos los planes
 
 // create subs
