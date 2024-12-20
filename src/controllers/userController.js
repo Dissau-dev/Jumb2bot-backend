@@ -98,6 +98,28 @@ const updateUser = async (req, res, next) => {
     }
   };
   
+  const updatePassword = async (req, res) => {
+    const { userId } = req.params;
+    const { password } = req.body;
+  
+    const hashedPassword = await bcryptjs.hash(password, 6);
+
+    if (!password) {
+      return res.status(400).json({ message: "La nueva contraseña es requerida." });
+    }
+    try {
+
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+
+      if (!user) return res.status(404).json({ message: 'User not found' });
+       await prisma.user.update(user.id,{
+        password: hashedPassword
+      })
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({message: "Error server"})
+    }
+  }
   const deleteUser = async (req, res, next) => {
     try {
       // Convertir el ID a un número entero

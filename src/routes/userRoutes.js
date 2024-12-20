@@ -25,7 +25,14 @@ router.put('/user/:id',[
    // check('id').custom(isUserById),
     validateField
 ],updateUser,);
+// update user
 
+router.put('/user/change-passwors/:id',[
+    // check('id','is not a valid id in MongoDB').isMongoId(),
+    // check('id').custom(isUserById),
+     validateField
+ ],updateUser,);
+ 
 // delete user
 router.delete('/user/:id',[
   //  validateJWT,
