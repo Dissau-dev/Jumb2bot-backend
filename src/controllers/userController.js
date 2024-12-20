@@ -112,9 +112,11 @@ const updateUser = async (req, res, next) => {
       const user = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!user) return res.status(404).json({ message: 'User not found' });
+      
        await prisma.user.update(user.id,{
         password: hashedPassword
       })
+      res.json({ message: 'Password change' });
     } catch (error) {
       console.log(error);
       res.status(500).json({message: "Error server"})
