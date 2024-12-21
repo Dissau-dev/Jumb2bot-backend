@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, getAllUsers, updateUser, deleteUser, getUserById, login } = require('../controllers/userController');
+const { createUser, getAllUsers, updateUser, deleteUser, getUserById, login, updatePassword } = require('../controllers/userController');
 const { validateField } = require('../middleware/validateFields');
 const { check } = require('express-validator');
 
@@ -31,7 +31,7 @@ router.put('/user/change-passwors/:id',[
     // check('id','is not a valid id in MongoDB').isMongoId(),
     // check('id').custom(isUserById),
      validateField
- ],updateUser,);
+ ],updatePassword,);
  
 // delete user
 router.delete('/user/:id',[

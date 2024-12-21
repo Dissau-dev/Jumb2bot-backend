@@ -192,4 +192,4 @@ const updateUser = async (req, res, next) => {
 
    }
 
-module.exports = { createUser, getAllUsers,updateUser,deleteUser,  getUserById,login };
+module.exports = { createUser, getAllUsers,updateUser,deleteUser,  getUserById,login , updatePassword};
