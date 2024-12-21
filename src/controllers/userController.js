@@ -99,7 +99,7 @@ const updateUser = async (req, res, next) => {
   };
   
   const updatePassword = async (req, res) => {
-    const { userId } = req.params;
+    const { id } = req.params;
     const { password } = req.body;
   
     const hashedPassword = await bcryptjs.hash(password, 6);
@@ -109,14 +109,16 @@ const updateUser = async (req, res, next) => {
     }
     try {
 
-      const user = await prisma.user.findUnique({ where: { id: userId } });
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
 
       if (!user) return res.status(404).json({ message: 'User not found' });
       
        await prisma.user.update(user.id,{
         password: hashedPassword
       })
-      res.json({ message: 'Password change' });
+      res.status(201).json({ message: 'Password change' });
     } catch (error) {
       console.log(error);
       res.status(500).json({message: "Error server"})
@@ -134,8 +136,8 @@ const updateUser = async (req, res, next) => {
   
       // Buscar el usuario por su ID
       const user = await prisma.user.findUnique({
-        where: {id:userId}
-    })
+        where: { id: userId },
+      });
   
       // Si el usuario no existe, retorna un 404
       if (!user) {
