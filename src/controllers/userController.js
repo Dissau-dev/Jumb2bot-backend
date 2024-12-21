@@ -134,8 +134,8 @@ const updateUser = async (req, res, next) => {
   
       // Buscar el usuario por su ID
       const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
+        where: {id:userId}
+    })
   
       // Si el usuario no existe, retorna un 404
       if (!user) {
