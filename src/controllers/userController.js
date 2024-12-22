@@ -138,7 +138,7 @@ const updateUser = async (req, res, next) => {
       res.status(500).json({ message: "Error del servidor." });
     }
   };
-  
+//--  
   const deleteUser = async (req, res, next) => {
     try {
       // Convertir el ID a un número entero
