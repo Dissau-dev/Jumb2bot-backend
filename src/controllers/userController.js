@@ -102,28 +102,43 @@ const updateUser = async (req, res, next) => {
     const { id } = req.params;
     const { password } = req.body;
   
-    const hashedPassword = await bcryptjs.hash(password, 6);
-
+    // Validar entrada
     if (!password) {
       return res.status(400).json({ message: "La nueva contraseña es requerida." });
     }
+  
     try {
-
+      // Asegúrate de que el ID sea un número
+      const userId = parseInt(id);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "ID inválido." });
+      }
+  
+      // Verificar si el usuario existe
       const user = await prisma.user.findUnique({
-        where: { id: parseInt(id) },
+        where: { id: userId },
       });
-
-      if (!user) return res.status(404).json({ message: 'User not found' });
-      
-       await prisma.user.update(user.id,{
-        password: hashedPassword
-      })
-      res.status(201).json({ message: 'Password change' });
+  
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado." });
+      }
+  
+      // Hashear la contraseña
+      const hashedPassword = await bcryptjs.hash(password, 6);
+  
+      // Actualizar la contraseña
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+  
+      res.status(200).json({ message: "Contraseña actualizada exitosamente." });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({message: "Error server"})
+      console.error(error);
+      res.status(500).json({ message: "Error del servidor." });
     }
-  }
+  };
+  
   const deleteUser = async (req, res, next) => {
     try {
       // Convertir el ID a un número entero
