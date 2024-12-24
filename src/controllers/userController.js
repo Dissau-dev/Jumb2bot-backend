@@ -17,9 +17,16 @@ function generateReferralCode() {
 
 // Crear usuario
 const createUser = async (req, res) => {
-  console.log('Body recibido:', req.body);
+  
 
-    const { email, password, referredBy,role,name } = req.body;
+    const { email, password, referredBy,role,name, device } = req.body;
+
+     // Verifica que los datos del dispositivo estén presentes
+  if (!device || !device.deviceId || !device.model) {
+    return res.status(400).json({
+      msg: 'Device information is required (deviceId and model).',
+    });
+  }
 
     const referralCode = generateReferralCode(); 
 
@@ -53,7 +60,9 @@ const createUser = async (req, res) => {
         password:hashedPassword,
         referredBy,
         stripeCustomerId: customer.id,
-        referralCode
+        referralCode,
+        devices:{set: [{ deviceId: device.deviceId, model: device.model }],}
+        
       },     
     });
     const token = await generateJWT(newUser);

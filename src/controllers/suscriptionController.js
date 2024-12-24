@@ -247,6 +247,79 @@ const getAllSubscriptions = async (req, res) => {
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
+
+  const verifySubscription = async (req, res) => {
+    try {
+      const { userId, deviceId } = req.body;
+  
+      if (!userId || !deviceId) {
+        return res.status(400).json({ error: 'El userId y deviceId son obligatorios' });
+      }
+
+   
+      const id = parseInt(userId);
+
+      const user = await prisma.user.findUnique({ where: { id } });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      
+    const findDevice =  user.devices.some(d => d.deviceId === deviceId) 
+
+     if(!findDevice){
+      return res.status(401).json({ error: 'Este dispositivo no coinde con el registró su cuenta, contacte con soporte para cambiarlo' });
+     }
+   
+      // Buscar la suscripción del usuario
+      const subscription = await prisma.subscription.findUnique({
+        where: { userId: id },
+      });
+  
+      if (!subscription) {
+        // Si no hay suscripción, verificar el tiempo de prueba
+       
+  
+        const userCreatedAt = new Date(user.createdAt);
+        const diferenciaDias = Math.floor((new Date() - userCreatedAt) / (1000 * 60 * 60 * 24)); // Días desde que se creó el usuario
+  
+        if (diferenciaDias >= 3) {
+          return res.status(403).json({ error: 'El tiempo de prueba ha culminado. Por favor, adquiera un plan.' });
+        }
+  
+        return res.status(200).json({
+          status: 'trial',
+          message: 'Conectado con el tiempo de prueba',
+        });
+      }
+  
+      // Verificar el estado y la fecha de la suscripción
+      const { status, endDate } = subscription;
+      const now = new Date();
+  
+      if ( status === 'cancel_at_period_end') {
+        if (new Date(endDate) < now) {
+          return res.status(403).json({
+            error: 'La suscripción ha vencido. Por favor, adquiera una nueva.',
+          });
+        }
+  
+        return res.status(200).json({
+          status: 'active',
+          message: 'Suscripción válida',
+          subscription: subscription
+        });
+      } else {
+        return res.status(403).json({
+          error: 'Por favor, verifique que su plan esté completo.',
+        });
+      }
+    } catch (error) {
+      console.error('Error en verifySubscription:', error.message);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
   
   const getAllPlans = async (req, res) => {
     try {
@@ -257,4 +330,4 @@ const getAllSubscriptions = async (req, res) => {
     }
   };
 
-module.exports = {createSubscription,getAllSubscriptions,UpdatedSubscription,cancelSubscription, getAllPlans , getSubscriptionsByUserId};
+module.exports = {createSubscription,getAllSubscriptions,UpdatedSubscription,cancelSubscription,verifySubscription, getAllPlans , getSubscriptionsByUserId};
