@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,28 +13,28 @@ model User {
   password         String
   name             String
   referralCode     String        @unique
-  referredBy       String? // Código de quien lo refirió
-  stripeCustomerId String? // ID del cliente en Stripe
-  subscription     Subscription?
+  referredBy       String?
+  stripeCustomerId String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   role             Role
-  devices          Json? // Cambia aquí
+  devices          Json?
+  subscription     Subscription?
+}
+
+model Subscription {
+  id                   Int      @id @default(autoincrement())
+  plan                 String
+  startDate            DateTime
+  endDate              DateTime
+  stripeSubscriptionId String   @unique
+  status               String
+  trialEndsAt          DateTime
+  userId               Int      @unique
+  user                 User     @relation(fields: [userId], references: [id])
 }
 
 enum Role {
   USER_ROLE
   ADMIN_ROLE
-}
-
-model Subscription {
-  id                   Int      @id @default(autoincrement())
-  plan                 String // Plan (mensual, trimestral, anual)
-  startDate            DateTime
-  endDate              DateTime
-  stripeSubscriptionId String   @unique // ID de la suscripción en Stripe
-  status               String // Estado de la suscripción: active, canceled, past_due
-  trialEndsAt          DateTime // Fecha de fin del periodo de prueba
-  userId               Int      @unique
-  user                 User     @relation(fields: [userId], references: [id])
 }
