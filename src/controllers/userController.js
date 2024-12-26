@@ -19,10 +19,10 @@ function generateReferralCode() {
 const createUser = async (req, res) => {
   
 
-    const { email, password, referredBy,role,name, device } = req.body;
+    const { email, password, referredBy,role,name, devices } = req.body;
 
      // Verifica que los datos del dispositivo estén presentes
-  if (!device) {
+  if (!devices) {
     return res.status(400).json({
       msg: 'Device information is required (deviceId and model).',
     });
