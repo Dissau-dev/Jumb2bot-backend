@@ -22,7 +22,7 @@ const createUser = async (req, res) => {
     const { email, password, referredBy,role,name, deviceId, deviceModel } = req.body;
 
      // Verifica que los datos del dispositivo estén presentes
-  if (!deviceId || deviceModel) {
+  if (!deviceId || !deviceModel) {
     return res.status(400).json({
       msg: 'Device information is required (deviceId and model).',
     });
