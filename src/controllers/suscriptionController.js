@@ -266,9 +266,9 @@ const getAllSubscriptions = async (req, res) => {
       }
 
       
-    const findDevice =  user.deviceId === deviceId; 
+    const deviceMatch =  user.deviceId === deviceId; 
 
-     if(!findDevice){
+     if(!deviceMatch){
       return res.status(401).json({ error: 'Este dispositivo no coincide con el registró su cuenta, contacte con soporte para cambiarlo' });
      }
    
