@@ -266,10 +266,10 @@ const getAllSubscriptions = async (req, res) => {
       }
 
       
-    const findDevice =  user.devices.some(d => d.deviceId === deviceId) 
+    const findDevice =  user.deviceId === deviceId; 
 
      if(!findDevice){
-      return res.status(401).json({ error: 'Este dispositivo no coinde con el registró su cuenta, contacte con soporte para cambiarlo' });
+      return res.status(401).json({ error: 'Este dispositivo no coincide con el registró su cuenta, contacte con soporte para cambiarlo' });
      }
    
       // Buscar la suscripción del usuario

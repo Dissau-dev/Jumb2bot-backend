@@ -19,10 +19,10 @@ function generateReferralCode() {
 const createUser = async (req, res) => {
   
 
-    const { email, password, referredBy,role,name, device } = req.body;
+    const { email, password, referredBy,role,name, deviceId, deviceModel } = req.body;
 
      // Verifica que los datos del dispositivo estén presentes
-  if (!device || !device.deviceId || !device.model) {
+  if ( !deviceId || !deviceModel) {
     return res.status(400).json({
       msg: 'Device information is required (deviceId and model).',
     });
@@ -61,7 +61,8 @@ const createUser = async (req, res) => {
         referredBy,
         stripeCustomerId: customer.id,
         referralCode,
-        devices:{set: [{ deviceId: device.deviceId, model: device.model }],}
+        deviceId,
+        deviceModel
         
       },     
     });
