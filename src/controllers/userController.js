@@ -15,67 +15,81 @@ function generateReferralCode() {
     return result;
   }
 
-// Crear usuario
-const createUser = async (req, res) => {
+  const createUser = async (req, res) => {
+    const { email, password, referredBy, role, name, devices } = req.body;
   
-
-    const { email, password, referredBy,role,name, devices } = req.body;
-
-     // Verifica que los datos del dispositivo estén presentes
-  if (!devices) {
-    return res.status(400).json({
-      msg: 'Device information is required (deviceId and model).',
-    });
-  }
-  const parsedDevices = typeof devices === 'string' ? JSON.parse(devices) : devices;
-  
-    const referralCode = generateReferralCode(); 
-
-    const areEmail = await prisma.user.findUnique({
-        where: {email}
-    })
-  
-    if (areEmail){
-        return res.status(400).json({
-         msg: 'This email is alredy register'
-        })
-       }
-       let customer
-       try {
-         customer = await stripe.customers.create({
-            email: email,
-            name: name,
-        });
+    // Verifica que los dispositivos sean un JSON válido
+    let parsedDevices;
+    try {
+      parsedDevices = typeof devices === 'string' ? JSON.parse(devices) : devices;
     } catch (error) {
-        console.error('Error creando cliente en Stripe:', error);
-        return res.status(500).json({ error: 'Error creating Stripe customer' });
+      return res.status(400).json({
+        msg: 'Invalid JSON format for devices.',
+      });
     }
-       //Encriptar la contraseña
-       const hashedPassword = await bcryptjs.hash(password, 6)
-
-       try {  const newUser = await prisma.user.create({
-      data: {
-        name,
-        role,
-        email,
-        password:hashedPassword,
-        referredBy,
-        stripeCustomerId: customer.id,
-        referralCode,
-        devices: parsedDevices || null, // Aquí pasamos el arreglo de objetos como JSON
-        
-      },     
-    });
-    const token = await generateJWT(newUser);
-
-    res.status(201).json({ user: newUser, token });
-   
-  } catch (err) {
-    console.error('Error creando usuario en la base de datos:', err);
-    return res.status(500).json({ error: 'Database error' });
   
-  }
-};
+    // Validación de la estructura de los dispositivos
+    if (
+      !Array.isArray(parsedDevices) ||
+      parsedDevices.some(
+        (d) => typeof d.deviceId !== 'string' || !d.deviceId.trim() || 
+               typeof d.model !== 'string' || !d.model.trim()
+      )
+    ) {
+      return res.status(400).json({
+        msg: 'Invalid devices format. Each device must have a non-empty deviceId and model.',
+      });
+    }
+  
+    const devicesAsJson = JSON.stringify(parsedDevices);
+  
+    // Verifica si el email ya está registrado
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ msg: 'This email is already registered.' });
+    }
+  
+    // Genera el código de referido
+    const referralCode = generateReferralCode();
+  
+    // Crea el cliente en Stripe
+    let customer;
+    try {
+      customer = await stripe.customers.create({
+        email,
+        name,
+      });
+    } catch (error) {
+      console.error('Error creating Stripe customer:', error);
+      return res.status(500).json({ error: 'Error creating Stripe customer.' });
+    }
+  
+    // Encripta la contraseña
+    const hashedPassword = await bcryptjs.hash(password, 6);
+  
+    // Crea el usuario en la base de datos
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          name,
+          role,
+          email,
+          password: hashedPassword,
+          referredBy,
+          stripeCustomerId: customer.id,
+          referralCode,
+          devices: devicesAsJson,
+        },
+      });
+  
+      const token = await generateJWT({ id: newUser.id, email: newUser.email, role: newUser.role });
+  
+      return res.status(201).json({ user: newUser, token });
+    } catch (err) {
+      console.error('Error creating user in the database:', err);
+      return res.status(500).json({ error: 'Error saving user in the database.' });
+    }
+  };
 
 const getUserById = async (req, res, next) => {
   try {
