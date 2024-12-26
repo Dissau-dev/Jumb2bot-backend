@@ -54,7 +54,7 @@ function generateReferralCode() {
   
     // Crea el cliente en Stripe
     let customer;
-    try {
+ /*   try {
       customer = await stripe.customers.create({
         email,
         name,
@@ -62,7 +62,7 @@ function generateReferralCode() {
     } catch (error) {
       console.error('Error creating Stripe customer:', error);
       return res.status(500).json({ error: 'Error creating Stripe customer.' });
-    }
+    }*/
   
     // Encripta la contraseña
     const hashedPassword = await bcryptjs.hash(password, 6);
@@ -76,7 +76,7 @@ function generateReferralCode() {
           email,
           password: hashedPassword,
           referredBy,
-          stripeCustomerId: customer.id,
+          stripeCustomerId: "mx121",
           referralCode,
           devices: devicesAsJson,
         },
