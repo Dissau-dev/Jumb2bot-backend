@@ -14,6 +14,10 @@ router.post('/subscription/create',[
 
 ],createSubscription);
 
+router.post('/subscription/verify',[
+
+],createSubscription);
+
 router.put('/subscription/cancel',[
 
 ],cancelSubscription);

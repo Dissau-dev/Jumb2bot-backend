@@ -9,9 +9,11 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "referralCode" TEXT NOT NULL,
     "referredBy" TEXT,
+    "stripeCustomerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "role" "Role" NOT NULL,
+    "devices" JSONB,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -22,6 +24,9 @@ CREATE TABLE "Subscription" (
     "plan" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
+    "stripeSubscriptionId" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "trialEndsAt" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
@@ -32,6 +37,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_referralCode_key" ON "User"("referralCode");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Subscription_stripeSubscriptionId_key" ON "Subscription"("stripeSubscriptionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
