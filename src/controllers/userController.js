@@ -27,7 +27,8 @@ const createUser = async (req, res) => {
       msg: 'Device information is required (deviceId and model).',
     });
   }
-
+  const parsedDevices = typeof devices === 'string' ? JSON.parse(devices) : devices;
+  
     const referralCode = generateReferralCode(); 
 
     const areEmail = await prisma.user.findUnique({
@@ -61,7 +62,7 @@ const createUser = async (req, res) => {
         referredBy,
         stripeCustomerId: customer.id,
         referralCode,
-        devices: devices ? JSON.parse(devices) : null, // Aquí pasamos el arreglo de objetos como JSON
+        devices: parsedDevices || null, // Aquí pasamos el arreglo de objetos como JSON
         
       },     
     });
