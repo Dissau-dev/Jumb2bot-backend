@@ -13,7 +13,8 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "role" "Role" NOT NULL,
-    "devices" JSONB,
+    "deviceId" TEXT,
+    "devieModel" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
