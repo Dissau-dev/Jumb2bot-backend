@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { createSubscription, getAllSubscriptions, UpdatedSubscription, getAllPlans,cancelSubscription, getSubscriptionsByUserId } = require('../controllers/suscriptionController');
+const { createSubscription, getAllSubscriptions, UpdatedSubscription, getAllPlans,cancelSubscription, getSubscriptionsByUserId, verifySubscription } = require('../controllers/suscriptionController');
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post('/subscription/create',[
 
 router.post('/subscription/verify',[
 
-],createSubscription);
+],verifySubscription);
 
 router.put('/subscription/cancel',[
 
