@@ -63,8 +63,8 @@ const createUser = async (req, res) => {
         referredBy,
         stripeCustomerId: customer.id,
         referralCode,
-        deviceId: "sdsf12",
-        devieModel: "samsung" // Aquí pasamos el arreglo de objetos como JSON
+        deviceId: deviceId,
+        devieModel: deviceModel // Aquí pasamos el arreglo de objetos como JSON
         
       },     
     });
