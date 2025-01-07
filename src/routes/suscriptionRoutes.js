@@ -22,7 +22,7 @@ router.put('/subscription/cancel',[
 
 ],cancelSubscription);
 
-// create subs
+// update subs
 router.put('/subscription/update',[
 
 ],UpdatedSubscription);
